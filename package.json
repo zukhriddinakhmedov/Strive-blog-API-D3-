@@ -6,7 +6,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon -e js ./src/server.js"
+    "dev": "nodemon -e js ./src/server.js",
+    "start": "nodemon src/server.js"
   },
   "repository": {
     "type": "git",
@@ -21,6 +22,13 @@
   "homepage": "https://github.com/zukhriddinakhmedov/Strive-blog-API-D3-#readme",
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "express-list-endpoints": "^6.0.0",
+    "fs": "0.0.1-security",
+    "path": "^0.12.7",
+    "uniqid": "^5.4.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.12"
   }
 }
