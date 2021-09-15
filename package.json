@@ -1,0 +1,26 @@
+{
+  "name": "strive-blog-backend",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon -e js ./src/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zukhriddinakhmedov/Strive-blog-API-D3-.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zukhriddinakhmedov/Strive-blog-API-D3-/issues"
+  },
+  "homepage": "https://github.com/zukhriddinakhmedov/Strive-blog-API-D3-#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1"
+  }
+}
