@@ -63,4 +63,46 @@ router.get("/:id", (req, res, next) => {
     }
 })
 
+router.post("/", (req, res, next) => {
+    try {
+        const newPost = { ...req.body, id: uniqid(), createdAt: new Date() }
+        const posts = getPosts()
+        posts.push(newPost)
+        writePosts(posts)
+
+        res.status(201).send({ id: newPost.id })
+    } catch (error) {
+        next(error)
+    }
+})
+
+router.put("/:id", (req, res, next) => {
+    try {
+        const posts = getPosts()
+        const index = posts.findIndex(p => p.id === req.params.id)
+
+        const postToModify = posts[index]
+        const updatedField = req.body
+        const udpatedPost = { ...postToModify, ...updatedField }
+        posts[index] = udpatedPost
+
+        writePosts(posts)
+
+        res.send(udpatedPost)
+    } catch (error) {
+        next(error)
+    }
+})
+
+router.delete("/:id", (req, res, next) => {
+    try {
+        const posts = getPosts()
+        const filteredPosts = posts.filter(post => post.id !== req.params.id)
+        writePosts(filteredPosts)
+
+        res.status(204).send()
+    } catch (error) {
+        next(error)
+    }
+})
 export default router
