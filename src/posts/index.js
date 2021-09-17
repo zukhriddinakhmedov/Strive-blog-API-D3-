@@ -10,6 +10,8 @@ import { fileURLToPath } from "url"
 
 import createHttpError from "http-errors"
 
+import { checkPostSchema, checkSearchSchema, checkValidationResult } from "./validation.js"
+
 const _filename = fileURLToPath(import.meta.url)
 
 const _dirname = dirname(_filename)
@@ -33,9 +35,24 @@ const aLoggerMiddleware = (req, res, next) => {
 // PUT /blogPosts /123 => edit the blogpost with the given id
 // DELETE /blogPosts /123 => delete the blogpost with the given id
 
+//search get
+router.get("/search", checkSearchSchema, checkValidationResult, async (req, res, next) => {
+    try {
+        const { title } = req.query
+        const fileAsBuffer = getPosts()
+        const fileAsString = fileAsBuffer.toString()
+        const postsArray = JSON.parse(fileAsString)
+        const filteredPosts = postsArray.filter((post) =>
+            post.title.toLowerCase().includes(title.toLowerCase())
+        )
+        res.send(filteredPosts)
+    } catch (error) {
+        res.send(500).send({ message: error.message })
+    }
+})
 
 //to get all the blogPosts
-router.get("/", aLoggerMiddleware, (req, res, next) => {
+router.get("/", aLoggerMiddleware, async (req, res, next) => {
     try {
         const posts = getPosts()
         if (req.query && req.query.title) {
@@ -63,18 +80,24 @@ router.get("/:id", (req, res, next) => {
     }
 })
 
-router.post("/", (req, res, next) => {
-    try {
-        const newPost = { ...req.body, id: uniqid(), createdAt: new Date() }
-        const posts = getPosts()
-        posts.push(newPost)
-        writePosts(posts)
+router.post(
+    "/", checkPostSchema, checkValidationResult, async (req, res, next) => {
+        try {
+            const post = {
+                id: uniqid(),
+                ...req.body,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            }
+            const posts = getPosts()
+            posts.push(post)
+            writePosts(posts)
 
-        res.status(201).send({ id: newPost.id })
-    } catch (error) {
-        next(error)
-    }
-})
+            res.status(201).send(post)
+        } catch (error) {
+            next(error)
+        }
+    })
 
 router.put("/:id", (req, res, next) => {
     try {
