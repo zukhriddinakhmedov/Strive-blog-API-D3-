@@ -1,0 +1,19 @@
+[
+    {
+        "id": "602ue10d7kovk4xyh",
+        "title": " A blog post",
+        "content": "<p>Hello world !</p>",
+        "category": "Article Sample",
+        "cover": "http://placehold.it/600x600",
+        "author": {
+            "name": "Zukhriddin Akhmed",
+            "avatar": "https://ubeytdemir.com/avatar.png"
+        },
+        "readTime": {
+            "value": 1,
+            "unit": "minute"
+        },
+        "createdAt": "2021-05-19T14:25:32.392Z",
+        "updatedAt": "2021-05-19T14:25:54.582Z"
+    }
+]
