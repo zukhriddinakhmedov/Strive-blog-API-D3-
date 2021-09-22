@@ -65,7 +65,7 @@ router.get("/", aLoggerMiddleware, async (req, res, next) => {
         next(error)//if next will be used here we can send the error to the error handlers
     }
 })
-
+//for single get 
 router.get("/:id", (req, res, next) => {
     try {
         const posts = getPosts()
@@ -77,6 +77,20 @@ router.get("/:id", (req, res, next) => {
         }
     } catch (error) {
         next(error)
+    }
+})
+//comments get
+router.get("/:id/comments", async (req, res, next) => {
+    try {
+        const posts = getPosts()
+        const post = posts.find((post) => post.id === req.params.id)
+        if (!post) {
+            res.status(404).send({ mesage: `post with ${req.params.id} is not found` })
+        }
+        post.comments = blog.comments || []
+        res.send(blog.comments)
+    } catch (error) {
+        res.send(500).send({ message: error.message })
     }
 })
 
@@ -99,21 +113,60 @@ router.post(
         }
     })
 
-router.put("/:id", (req, res, next) => {
+//to update the post
+router.put("/:id", async (req, res, next) => {
     try {
         const posts = getPosts()
-        const index = posts.findIndex(p => p.id === req.params.id)
+        const postIndex = posts.findIndex(p => p.id === req.params.id)
+        if (!postIndex == -1) {
+            res
+                .status(404)
+                .send({ message: `psot with ${req.params.id} is not found` })
+        }
+        const previousPostData = posts[postIndex]
+        const updatedField = {
+            ...previousPostData,
+            ...req.body,
+            updatedAt: new Date(),
+            id: req.params.id,
+        }
 
-        const postToModify = posts[index]
-        const updatedField = req.body
-        const udpatedPost = { ...postToModify, ...updatedField }
-        posts[index] = udpatedPost
-
+        posts[postIndex] = updatedField
         writePosts(posts)
-
-        res.send(udpatedPost)
+        res.send(updatedField)
     } catch (error) {
-        next(error)
+        res.send(500).send({ message: error.message })
+    }
+})
+
+//to update the comment
+router.put("/:id/comment", async (req, res, next) => {
+    try {
+        const { text, userName } = req.body
+        const comment = { id: uniqid(), text, userName, createdAt: new Date() }
+        const posts = getPosts()
+        const postIndex = posts.findIndex((post) => post.id === req.params.id)
+        if (!postIndex == -1) {
+            res
+                .status(404)
+                .send({ message: `psot with ${req.params.id} is not found` })
+        }
+        const previousPostData = posts[postIndex]
+        previousPostData.comments = previousPostData.comments || []
+        const updatedField = {
+            ...previousPostData,
+            ...req.body,
+            comments: [...previousPostData.comments, comment],
+            updatedAt: new Date(),
+            id: req.params.id,
+        }
+
+        posts[postIndex] = updatedField
+        writePosts(posts)
+        res.send(updatedField)
+    } catch (error) {
+        console.log(error)
+        res.send(500).send({ message: error.message })
     }
 })
 
