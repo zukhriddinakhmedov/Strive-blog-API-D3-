@@ -7,13 +7,23 @@
         "cover": "http://placehold.it/600x600",
         "author": {
             "name": "Zukhriddin Akhmed",
-            "avatar": "https://ubeytdemir.com/avatar.png"
+            "avatar": "photo_2021-09-09 13.55.12.gif"
         },
         "readTime": {
             "value": 1,
             "unit": "minute"
         },
         "createdAt": "2021-05-19T14:25:32.392Z",
-        "updatedAt": "2021-05-19T14:25:54.582Z"
+        "updatedAt": "2021-05-19T14:25:54.582Z",
+        "comments": [
+            {
+                "id": "602ue1h9skowbh9ry",
+                "text": "Its awesome blog post!",
+                "userName": "Zuhayr",
+                "createdAt": "2021-05-20T03:10:57.213Z"
+            }
+        ],
+        "text": "Its awesome blog post!",
+        "userName": "Zuhayr"
     }
 ]

@@ -12,6 +12,8 @@ import filesRouter from "./services/files/index.js"
 
 import path, { dirname } from "path"
 
+import { join } from "path"
+
 import { fileURLToPath } from "url"
 
 import { notFound, forbidden, catchAllErrorHandler } from "./posts/errorHandlers.js"
@@ -21,11 +23,9 @@ const _filename = fileURLToPath(import.meta.url)
 
 const _dirname = dirname(_filename)
 
-const publicDirectory = path.join(_dirname, "../public")
-
 const server = express()
 
-const port = process.env.PORT
+const port = process.env.PORT || 3002
 
 console.log("ENV VAR -->", process.env.MONGO_CONNECTION)
 
@@ -51,7 +51,7 @@ const corsOpts = {
 
 
 
-const publicFolderPath = join(process.cwd(), "public")
+const publicFolderPath = join(process.cwd(), "public/img")
 
 // *************GLOBAL MIDDLEWARES **************
 

@@ -8,9 +8,11 @@ import path, { dirname } from "path"
 
 import { fileURLToPath } from "url"
 
+import { parseFile, uploadFile } from "../utils/upload/index.js"
+
 import createHttpError from "http-errors"
 
-import { checkPostSchema, checkSearchSchema, checkValidationResult } from "./validation.js"
+import { checkPostSchema, checkSearchSchema, checkCommentSchema, checkValidationResult } from "./validation.js"
 
 const _filename = fileURLToPath(import.meta.url)
 
@@ -65,6 +67,8 @@ router.get("/", aLoggerMiddleware, async (req, res, next) => {
         next(error)//if next will be used here we can send the error to the error handlers
     }
 })
+
+
 //for single get 
 router.get("/:id", (req, res, next) => {
     try {
@@ -79,6 +83,8 @@ router.get("/:id", (req, res, next) => {
         next(error)
     }
 })
+
+
 //comments get
 router.get("/:id/comments", async (req, res, next) => {
     try {
@@ -93,6 +99,8 @@ router.get("/:id/comments", async (req, res, next) => {
         res.send(500).send({ message: error.message })
     }
 })
+
+// POST
 
 router.post(
     "/", checkPostSchema, checkValidationResult, async (req, res, next) => {
@@ -112,6 +120,8 @@ router.post(
             next(error)
         }
     })
+
+
 
 //to update the post
 router.put("/:id", async (req, res, next) => {
@@ -139,8 +149,10 @@ router.put("/:id", async (req, res, next) => {
     }
 })
 
+
+
 //to update the comment
-router.put("/:id/comment", async (req, res, next) => {
+router.put("/:id/comment", checkCommentSchema, checkValidationResult, async (req, res, next) => {
     try {
         const { text, userName } = req.body
         const comment = { id: uniqid(), text, userName, createdAt: new Date() }
@@ -170,6 +182,35 @@ router.put("/:id/comment", async (req, res, next) => {
     }
 })
 
+
+// UPDATE COVER
+router.put("/:id/cover", parseFile.single("cover"),
+    uploadFile,
+    async (req, res, next) => {
+        try {
+            let posts = getPosts()
+            const postIndex = posts.findIndex((post) => post.id === req.params.id)
+            if (!postIndex == -1) {
+                res.status(404).send({ message: `post with ${req.params.id} is not found` })
+            }
+            const previousPostData = posts[postIndex]
+            const updatedField = {
+                ...previousPostData,
+                cover: req.file,
+                updatedAt: new Date(),
+                id: req.params.id,
+            }
+            posts[postIndex] = updatedField
+            writePosts(posts)
+            res.send(updatedField)
+        } catch (error) {
+            res.send(500).send({ message: error.message })
+        }
+    }
+)
+
+
+//DELETE
 router.delete("/:id", (req, res, next) => {
     try {
         const posts = getPosts()

@@ -3,6 +3,7 @@ import fs from "fs"
 import uniqid from "uniqid"
 import path, { dirname } from "path"
 import { fileURLToPath } from "url"
+import { parseFile, uploadFile } from "../utils/upload/index.js"
 
 const _filename = fileURLToPath(import.meta.url)
 
@@ -108,6 +109,34 @@ router.put("/:id", async (req, res, next) => {
         const changedAuthor = {
             ...previousAuthorData,
             ...req.body,
+            updateAt: new Date(),
+            id: req.params.id,
+        }
+        fileAsJson[authorIndex] = changedAuthor
+
+        fs.writeFileSync(authorsFilePath, JSON.stringify(fileAsJson))
+        res.send(changedAuthor)
+    } catch (error) {
+        res.send(500).send({ message: error.message })
+    }
+})
+
+// update an avatar
+router.put("/:id/avatar", parseFile.single("avatar"), uploadFile, async (req, res, next) => {
+    try {
+        const fileAsBuffer = fs.readFileSync(authorsFilePath)
+        const fileAsString = fileAsBuffer.toString()
+        const fileAsJson = JSON.parse(fileAsString)
+
+        const authorIndex = fileAsJson.findIndex((author) => author.id === req.params.id)
+        if (!authorIndex == -1) {
+            res.status(404).send({ message: `Author with ${req.params.id} is not found` })
+        }
+
+        const previousAuthorData = fileAsJson[authorIndex]
+        const changedAuthor = {
+            ...previousAuthorData,
+            avatar: req.file,
             updateAt: new Date(),
             id: req.params.id,
         }
